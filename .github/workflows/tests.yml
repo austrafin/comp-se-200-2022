@@ -21,10 +21,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm test
-  coverall:
-    name: Coverall
+      - run: |
+          npm ci
+          npm run test
+  coverage-report:
+    name: Coverage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -32,12 +33,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14.x
-
-      - name: Test coverage
+      - name: Run coverage
+        continue-on-error: true
         run: |
-          mkdir coverage
-          npm run coverage-report
-
+          npm ci
+          npm run test-coverage
+      - name: Create report
+        run: npm run coverage-report
       - name: Coveralls
         uses: coverallsapp/github-action@master
         with:
